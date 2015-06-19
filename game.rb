@@ -3,17 +3,28 @@ require 'gosu'
 class GameWindow < Gosu::Window
 	def initialize(*args)
 		super
-		@background = Gosu::Image.new(self, "images/background.png", false)	
-		@foreground = Gosu::Image.new(self, "images/foreground.png", false)
+		@images = {
+			background: Gosu::Image.new(self, "images/background.png", false),
+			foreground: Gosu::Image.new(self, "images/foreground.png", true)
+		}
+		@scroll_x = 0
 	end
 
 	def button_down(button)
 		close if button == Gossu::KbEscape
 	end
 
+	def update
+		@scroll_x += 3
+		if @scroll_x > @images[:foreground].width
+			@scroll_x = 0
+		end
+	end
+
 	def draw
-		@background.draw(0,0,0)
-		@foreground.draw(0,0,0)
+		@images[:background].draw(0,0,0)
+		@images[:foreground].draw(-@scroll_x,0,0)
+		@images[:foreground].draw(-@scroll_x + @images[:foreground].width,0,0)
 	end
 
 end
