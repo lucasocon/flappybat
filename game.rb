@@ -1,7 +1,13 @@
 require 'gosu'
 require 'defstruct'
 
-GRAVITY = 100 # pixels/s^2
+GRAVITY = 600 # pixels/s^2
+JUMP_VEL = 300
+
+Obstacle = DefStruct.new{{
+	y: 0,
+	x: 0
+	}}
 
 GameState = DefStruct.new{{
 	scroll_x: 0,
@@ -15,13 +21,18 @@ class GameWindow < Gosu::Window
 		@images = {
 			background: Gosu::Image.new(self, "images/background.png", false),
 			foreground: Gosu::Image.new(self, "images/foreground.png", true),
-			player: Gosu::Image.new(self, "images/fruity_1.png", false)
+			player: Gosu::Image.new(self, "images/fruity_1.png", false),
+			obstacle: Gosu::Image.new(self, "images/obstacle.png", false),
 		}
 		@state = GameState.new
 	end
 
 	def button_down(button)
-		close if button == Gossu::KbEscape
+		close if button == Gosu::KbEscape
+
+		if button == Gosu::KbSpace
+			@state.player_y_vel = -JUMP_VEL
+		end
 	end
 
 	def update
@@ -36,12 +47,16 @@ class GameWindow < Gosu::Window
 	end
 
 	def draw
-		@images[:background].draw(0,0,0)
-		@images[:foreground].draw(-@state.scroll_x,0,0)
-		@images[:foreground].draw(-@state.scroll_x + @images[:foreground].width,0,0)
-		@images[:player].draw(20,@state.player_y,0)
-	end
+		@images[:background].draw(0, 0, 0)
+		@images[:foreground].draw(-@state.scroll_x, 0, 0)
+		@images[:foreground].draw(-@state.scroll_x + @images[:foreground].width, 0, 0)
+		@images[:player].draw(20, @state.player_y, 0)
 
+		@images[:obstacle].draw(200,-300, 0)
+		scale(1, -1) do
+			@images[:obstacle].draw(200, -height - 400, 0)
+		end
+	end
 end
-window = GameWindow.new(320,480,false)
+window = GameWindow.new(320, 480, false)
 window.show
